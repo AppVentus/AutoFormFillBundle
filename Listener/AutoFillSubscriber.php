@@ -59,6 +59,7 @@ class AutoFillSubscriber implements EventSubscriberInterface
                 $entities = $this->em->getRepository($params['targetEntity'])->findAll();
 
                 if (!count($entities)) {
+                    break;
                     $entity = @$this->populateData($params['targetEntity']);
                 } else {
                     $entity = $entities[array_rand($entities)];
