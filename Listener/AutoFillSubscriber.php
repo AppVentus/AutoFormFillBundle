@@ -83,10 +83,8 @@ class AutoFillSubscriber implements EventSubscriberInterface
     {
         $data = '';
         try {
-            error_log($field);
             $data = $this->faker->$field;
         } catch (\Exception $e) {
-
             switch ($type) {
                 case 'string':
                     $data = $this->faker->text(5);
@@ -98,7 +96,7 @@ class AutoFillSubscriber implements EventSubscriberInterface
                     $data = array();
                     break;
                 case 'boolean':
-                    $data = array_rand(array(true, false));
+                    $data = (bool) array_rand(array(true, false));
                     break;
                 case 'integer':
                     $data = $this->faker->randomDigit(1, 100);
