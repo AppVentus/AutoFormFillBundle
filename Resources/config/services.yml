@@ -5,3 +5,6 @@ services:
         scope: request
         tags:
             - { name: form.type_extension, alias: form }
+    auto_form_field.filler:
+        class: AppVentus\AutoFormFillBundle\Service\Filler
+        arguments: ["@doctrine.orm.entity_manager"]
