@@ -13,12 +13,14 @@ class AutoFillSubscriber implements EventSubscriberInterface
 
     private $builder;
     private $em;
+    private $filler;
     private $faker;
 
-    public function __construct(FormBuilderInterface $builder, $em, $options)
+    public function __construct(FormBuilderInterface $builder, $em, $filler, $options)
     {
         $this->builder = $builder;
         $this->em = $em;
+        $this->filler = $filler;
         $this->options = $options;
     }
 

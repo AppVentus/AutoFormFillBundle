@@ -16,30 +16,60 @@ class Filler
         $this->faker = \Faker\Factory::create('fr_FR');
     }
 
+    public function completeObject(&$object) {
+        $this->fillObject($object, false);
+    }
     public function populateData($dataClass)
     {
+        $newData = new $dataClass();
+        $this->fillObject($newData, true);
+
+    }
+
+    private function fillObject(&$newData, $force = false)
+    {
+        $dataClass = get_class($newData);
         try {
-            $newData = new $dataClass();
             $metadata = $this->em->getClassMetadata($dataClass);
             foreach ($metadata->fieldMappings as $field => $params) {
-                if (!array_key_exists('id', $params) && method_exists($newData, 'set' . ucfirst($field))) {
+                if (!array_key_exists('id', $params)
+                    && method_exists($newData, 'set' . ucfirst($field))
+                    && method_exists($newData, 'get' . ucfirst($field))
+                    && ($newData->{'get' . ucfirst($field)}() == null
+                        || $force == true)
+                ) {
                     $newData->{'set' . ucfirst($field)}($this->resolveData($field, $params['type']));
                 }
             }
             foreach ($metadata->associationMappings as $field => $params) {
-                $entities = $this->em->getRepository($params['targetEntity'])->findAll();
+                //@todo: append "s" could not work sometimes
+                if (method_exists($newData, 'get' . ucfirst($field) . "s")
+                    && ($newData->{'get' . ucfirst($field) . "s"}() == null
+                    || $force == true)) {
 
-                if (!count($entities)) {
-                    break;
-                } else {
-                    $entity = $entities[array_rand($entities)];
-                }
-                if (in_array($params['type'], array(ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY)) && method_exists($newData, 'add' . substr_replace(ucfirst($field), "", -1))) {
+                    $entities = $this->em->getRepository($params['targetEntity'])->findAll();
 
-                    // TODO: better way to transform "addFoos()" into "addFoo()"
-                    $newData->{'add' . substr_replace(ucfirst($field), "", -1)}($entity);
-                } elseif (in_array($params['type'], array(ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE)) && 'set' . ucfirst($field)) {
-                    $newData->{'set' . ucfirst($field)}($entity);
+                    if (!count($entities)) {
+                        break;
+                    } else {
+                        $entity = $entities[array_rand($entities)];
+                    }
+                    if (in_array(
+                            $params['type'],
+                            array(ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY)
+                        )
+                        && method_exists($newData, 'add' . substr_replace(ucfirst($field), "", -1))
+                    ) {
+
+                        // @todo: better way to transform "addFoos()" into "addFoo()"
+                        $newData->{'add' . substr_replace(ucfirst($field), "", -1)}($entity);
+                    } elseif (in_array(
+                            $params['type'],
+                            array(ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE)
+                        ) && 'set' . ucfirst($field)
+                    ) {
+                        $newData->{'set' . ucfirst($field)}($entity);
+                    }
                 }
             }
 

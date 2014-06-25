@@ -8,11 +8,13 @@ use AppVentus\AutoFormFillBundle\Listener\AutoFillSubscriber;
 class ListenerExtension extends AbstractTypeExtension
 {
     private $em;
+    private $filler;
     private $request;
 
-    public function __construct($em, $request)
+    public function __construct($em, $filler, $request)
     {
         $this->em = $em;
+        $this->filler = $filler;
         $this->request = $request;
     }
 
@@ -20,7 +22,7 @@ class ListenerExtension extends AbstractTypeExtension
     {
         if ($this->request->getMethod() !== 'POST') {
             $builder
-                ->addEventSubscriber(new AutoFillSubscriber($builder, $this->em, $options));
+                ->addEventSubscriber(new AutoFillSubscriber($builder, $this->em, $this->filler, $options));
         }
     }
 
