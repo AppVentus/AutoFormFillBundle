@@ -24,6 +24,7 @@ class Filler
         $newData = new $dataClass();
         $this->fillObject($newData, true);
 
+        return $newData;
     }
 
     private function fillObject(&$newData, $force = false)

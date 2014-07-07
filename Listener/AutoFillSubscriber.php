@@ -37,7 +37,7 @@ class AutoFillSubscriber implements EventSubscriberInterface
         if (!empty($this->options['data_class'])
                 &&
                 ( !is_object($data)
-                   || (is_object($data) && !$data->getId())
+                   || (is_object($data) && (!property_exists(get_class($data), 'id') || !$data->getId()))
                 )) {
             $dataClass = $this->options['data_class'];
             $newData = @$this->filler->populateData($dataClass);
