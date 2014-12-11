@@ -106,6 +106,7 @@ class Filler
                 case 'float':
                     $data = $this->faker->randomFloat(2, 1, 100);
                     break;
+		case 'date':
                 case 'datetime':
                     $data = new \DateTime($this->faker->date);
                     break;
