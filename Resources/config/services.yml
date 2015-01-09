@@ -1,7 +1,7 @@
 services:
     auto_form_field.listener_extension:
         class: AppVentus\AutoFormFillBundle\Form\Extension\ListenerExtension
-        arguments: ["@doctrine.orm.entity_manager", "@auto_form_field.filler", "@request"]
+        arguments: ["@doctrine.orm.entity_manager", "@auto_form_field.filler", "@request", %av_auto_form_fill.enabled%]
         scope: request
         tags:
             - { name: form.type_extension, alias: form }

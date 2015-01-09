@@ -24,5 +24,9 @@ class AvAutoFormFillExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $container->setParameter(
+            'av_auto_form_fill.enabled', $config['enabled']
+        );
     }
 }
